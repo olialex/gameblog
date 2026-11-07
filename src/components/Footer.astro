@@ -1,0 +1,80 @@
+---
+import { sitio } from '../../sitio.js';
+import { withBase } from '../utils/url';
+
+const etiquetas: Record<string, string> = {
+  instagram: 'Instagram',
+  youtube: 'YouTube',
+  x: 'X / Twitter',
+  correo: 'Correo',
+};
+
+const redes = sitio.autor.redes.filter((r) => r.url);
+---
+
+<footer class="relative mt-24 border-t border-[var(--borde)] bg-[var(--negro)]/45">
+  <div class="mx-auto max-w-[1400px] px-5 pb-10 pt-14 sm:px-8">
+    <div class="grid gap-12 md:grid-cols-[1.5fr_1fr_1fr]">
+      <!-- Marca -->
+      <div>
+        <a href={withBase('/')} class="group inline-flex items-center gap-3">
+          <span class="grid h-10 w-10 place-items-center border border-[var(--rojo)] bg-[var(--rojo)] text-[var(--crema)] shadow-[3px_3px_0_var(--negro)] transition-transform group-hover:-rotate-6">
+            <span class="u-display text-2xl leading-none">{sitio.nombre.charAt(0)}</span>
+          </span>
+          <span class="u-display text-3xl leading-none">{sitio.nombre}</span>
+        </a>
+
+        <p class="u-type mt-5 max-w-sm text-sm leading-6 text-[var(--suave)]">{sitio.pie.texto}</p>
+
+        <p class="u-mono mt-6 text-[8px] uppercase tracking-[0.28em] text-[var(--rojo)]">
+          © 2026 — Todos los errores son míos
+        </p>
+      </div>
+
+      <!-- Mapa -->
+      <div>
+        <p class="u-mono border-b border-dashed border-[var(--borde)] pb-2 text-[8px] uppercase tracking-[0.3em] text-[var(--rojo)]">
+          Mapa del sitio
+        </p>
+        <nav class="mt-4 flex flex-col gap-2.5" aria-label="Enlaces del pie">
+          {sitio.pie.enlaces.map((enlace) => (
+            <a
+              href={withBase(enlace.url)}
+              class="u-mono w-fit text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--suave)] transition hover:text-[var(--rojo)]"
+            >
+              {enlace.texto} <span aria-hidden="true" class="text-[var(--borde)]">↗</span>
+            </a>
+          ))}
+        </nav>
+      </div>
+
+      <!-- Redes -->
+      <div>
+        <p class="u-mono border-b border-dashed border-[var(--borde)] pb-2 text-[8px] uppercase tracking-[0.3em] text-[var(--rojo)]">
+          Encuéntrame
+        </p>
+        <div class="mt-4 flex flex-col gap-2.5">
+          {redes.map((red) => (
+            <a
+              href={red.url}
+              class="u-mono w-fit text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--suave)] transition hover:text-[var(--rojo)]"
+            >
+              {etiquetas[red.icono] ?? red.nombre ?? red.icono}
+            </a>
+          ))}
+        </div>
+
+        <p class="u-mono mt-7 text-[7px] uppercase leading-relaxed tracking-[0.24em] text-[var(--suave)]/60">
+          Hecho con Astro<br />Sin cookies · Sin tracking
+        </p>
+      </div>
+    </div>
+
+    <!-- Marca de agua -->
+    <div class="mt-14 select-none overflow-hidden border-t border-[var(--borde)] pt-8 text-center">
+      <p class="u-display text-outline whitespace-nowrap text-[clamp(2.6rem,9vw,8rem)] leading-none opacity-80">
+        {sitio.nombre}
+      </p>
+    </div>
+  </div>
+</footer>

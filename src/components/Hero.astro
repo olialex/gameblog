@@ -1,0 +1,97 @@
+---
+import { sitio } from '../../sitio.js';
+import CityArt from './CityArt.astro';
+import Badge from './Badge.astro';
+import { withBase } from '../utils/url';
+
+const { insignias, boton } = sitio.hero;
+
+const posiciones: Record<string, string> = {
+  tl: 'left-4 top-28 -rotate-6',
+  tr: 'right-4 top-40 rotate-3',
+  bl: 'left-8 bottom-48 rotate-2',
+  br: 'right-8 bottom-40 -rotate-3',
+};
+
+const cinta = [
+  'Cuaderno abierto',
+  'Sin algoritmo',
+  'Escrito a mano',
+  'Píxeles y café',
+  'Archivo abierto',
+  'Desde Venezuela',
+  'Ideas a medio cocinar',
+];
+---
+
+<section class="relative">
+  <!-- Ilustración principal -->
+  <div class="hero-frame scanlines">
+    <CityArt />
+
+    <!-- Etiquetas técnicas -->
+    <div class="absolute left-5 top-7 z-10 hidden sm:block">
+      <p class="vertical-text u-mono text-[8px] uppercase tracking-[0.42em] text-[var(--crema)]/55">
+        N 10°30′ — W 66°55′ · Zona roja
+      </p>
+    </div>
+    <div class="absolute right-5 top-7 z-10 text-right">
+      <p class="u-mono text-[8px] uppercase leading-relaxed tracking-[0.3em] text-[var(--crema)]/55">
+        Cuaderno<br />Archivo visual
+      </p>
+      <p class="u-mono mt-2 text-[8px] uppercase tracking-[0.3em] text-[var(--rojo)]">Vol. 01 / 2026</p>
+    </div>
+    <div class="absolute bottom-8 right-6 z-10 hidden text-right sm:block">
+      <span class="u-mono block text-[8px] uppercase tracking-[0.4em] text-[var(--crema)]/60">Desliza</span>
+      <span class="mt-2 block h-8 w-px bg-gradient-to-b from-[var(--crema)]/50 to-transparent ml-auto"></span>
+    </div>
+
+    <!-- Sellos / pegatinas -->
+    {insignias.map((b) => (
+      <span
+        class={`absolute z-10 hidden items-center gap-2 border bg-[var(--negro)]/60 px-3 py-1.5 u-mono text-[8px] font-bold uppercase tracking-[0.24em] backdrop-blur-sm md:inline-flex ${posiciones[b.posicion] ?? 'left-4 top-28'}`}
+        style={`color: var(--${b.color}); border-color: var(--${b.color});`}
+      >
+        <span class="inline-block h-1.5 w-1.5" style={`background: var(--${b.color})`}></span>
+        {b.texto}
+      </span>
+    ))}
+  </div>
+
+  <!-- Emblema -->
+  <div class="relative z-20 mx-auto -mt-24 flex max-w-5xl justify-center px-5 sm:-mt-32">
+    <Badge />
+  </div>
+
+  <!-- Introducción -->
+  <div class="relative z-10 mx-auto max-w-3xl px-5 pb-12 pt-7 text-center sm:pt-9">
+    <p class="u-type cursor-blink text-sm text-[var(--rojo)] sm:text-base">
+      &gt; {sitio.eslogan.toLowerCase()}
+    </p>
+    <p class="mx-auto mt-5 max-w-xl text-sm leading-6 text-[var(--suave)]">
+      {sitio.descripcion}
+    </p>
+
+    <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+      <a href={withBase(boton.url)} class="btn-hard">
+        {boton.texto}
+        <span aria-hidden="true" class="text-base leading-none">↓</span>
+      </a>
+      <a href={withBase('/sobre-mi/')} class="btn-ghost">Quién escribe esto</a>
+    </div>
+  </div>
+
+  <!-- Cinta de texto -->
+  <div class="relative overflow-hidden border-y border-[var(--borde)] bg-[var(--negro)]/45 py-2.5">
+    <div class="ticker-track">
+      {[0, 1].map(() =>
+        cinta.map((texto) => (
+          <span class="u-mono flex items-center gap-6 whitespace-nowrap px-6 text-[9px] uppercase tracking-[0.3em] text-[var(--suave)]">
+            {texto}
+            <span class="text-[var(--rojo)]" aria-hidden="true">✦</span>
+          </span>
+        ))
+      )}
+    </div>
+  </div>
+</section>

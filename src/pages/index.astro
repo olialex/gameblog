@@ -1,16 +1,203 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/Hero.astro';
+import PostCard from '../components/PostCard.astro';
+import Newsletter from '../components/Newsletter.astro';
+import { sitio } from '../../sitio.js';
+import { withBase } from '../utils/url';
+import { getCollection } from 'astro:content';
+
+const todos = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const destacado = sitio.home.mostrarDestacado ? todos[0] : null;
+const ultimos = todos.slice(0, sitio.home.cantidadUltimos);
+
+const claveDestacado = String(destacado?.data.category ?? '').toLowerCase().replace(/\s+/g, '');
+const catDestacado = sitio.categorias[claveDestacado];
+const fecha = new Date().toLocaleDateString(sitio.idioma, { day: '2-digit', month: 'long', year: 'numeric' });
+
+const secciones = sitio.home.orden.filter((s) => s !== 'webcomics' && s !== 'destacado');
+if (!sitio.newsletter.activo) {
+  const i = secciones.indexOf('newsletter');
+  if (i >= 0) secciones.splice(i, 1);
+}
+
+const etiquetasRed: Record<string, string> = {
+  instagram: 'Instagram',
+  youtube: 'YouTube',
+  x: 'X / Twitter',
+  correo: 'Correo',
+};
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout>
+  <Header />
+  <main class="flex-1">
+    <Hero />
+
+    <!-- NEWS / manifiesto + artículo destacado -->
+    <section class="mx-auto max-w-5xl px-5 py-16 sm:px-8 sm:py-20">
+      <div class="text-center">
+        <p class="u-kicker">// Última transmisión</p>
+        <h2 class="u-display mt-3 text-[clamp(4rem,13vw,8rem)] leading-none text-[var(--rojo)]">News</h2>
+
+        <div class="mt-5 flex items-center justify-center gap-3" aria-hidden="true">
+          <span class="h-px w-12 bg-[var(--borde)]"></span>
+          <span class="pixel-star scale-50"></span>
+          <span class="h-px w-12 bg-[var(--borde)]"></span>
+        </div>
+
+        <time datetime={new Date().toISOString()} class="u-mono mt-5 block text-[9px] uppercase tracking-[0.34em] text-[var(--suave)]">
+          {fecha}
+        </time>
+      </div>
+
+      <div class="mt-10 grid gap-8 md:grid-cols-2">
+        <p class="u-type text-[14px] leading-7 text-[var(--crema)]/85">
+          <span class="u-display float-left mr-2 mt-1 text-6xl leading-[0.7] text-[var(--rojo)]">E</span>sto no es un blog de
+          productividad. Es un cuaderno abierto: ideas a medio cocinar, proyectos que a veces salen y aprendizajes que casi
+          siempre duelen. Escribo para ordenar la cabeza y dejar rastro.
+        </p>
+        <p class="u-type text-[14px] leading-7 text-[var(--crema)]/85">
+          No hay fórmulas secretas ni rutinas de las cinco de la mañana. Solo curiosidad, café frío y la terquedad de seguir
+          preguntando. Si algo te sirve, llévatelo. Si no, déjalo pasar. Aquí no hay algoritmo que decida por ti.
+        </p>
+      </div>
+
+      {destacado && (
+        <a
+          href={withBase(`/articulos/${destacado.id}/`)}
+          class="group mt-12 grid items-center gap-6 border-t border-dashed border-[var(--borde)] pt-8 sm:grid-cols-[240px_1fr]"
+        >
+          <div class="frame-hard aspect-[16/10] overflow-hidden">
+            {destacado.data.image ? (
+              <img
+                src={withBase(destacado.data.image)}
+                alt={destacado.data.title}
+                class="img-duotone h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <div class="halftone flex h-full w-full items-center justify-center bg-[var(--rejilla)]">
+                <span class="u-display text-6xl text-[var(--borde)]">{catDestacado?.emoji ?? '◆'}</span>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <p class="u-mono flex flex-wrap items-center gap-2 text-[8px] uppercase tracking-[0.24em] text-[var(--suave)]">
+              <span class="text-[var(--rojo)]">{catDestacado?.nombre ?? destacado.data.category}</span>
+              <span aria-hidden="true">/</span>
+              <span>{destacado.data.pubDate.toLocaleDateString(sitio.idioma, { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+              <span aria-hidden="true">/</span>
+              <span>Reporte especial</span>
+            </p>
+            <h3 class="u-display mt-3 text-3xl leading-[0.95] transition-colors group-hover:text-[var(--rojo)] sm:text-4xl">
+              {destacado.data.title}
+            </h3>
+            <p class="mt-3 max-w-xl text-xs leading-5 text-[var(--suave)]">{destacado.data.description}</p>
+            <span class="u-mono mt-5 inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.22em] text-[var(--rojo)] transition-all group-hover:gap-4">
+              Leer la historia <span aria-hidden="true">→</span>
+            </span>
+          </div>
+        </a>
+      )}
+    </section>
+
+    {secciones.map((seccion) => (
+      <div>
+        {seccion === 'ultimos' && (
+          <section id="ultimos" class="mx-auto max-w-[1400px] px-5 py-16 sm:px-8">
+            <div class="flex flex-wrap items-end justify-between gap-5 border-b border-[var(--borde)] pb-5">
+              <div>
+                <p class="u-kicker">// Archivo reciente</p>
+                <h2 class="u-display mt-2 text-5xl sm:text-6xl">Últimos artículos</h2>
+              </div>
+              <a href={withBase('/articulos/')} class="btn-ghost">
+                Ver todo el archivo <span aria-hidden="true">→</span>
+              </a>
+            </div>
+
+            <div class="mt-9 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {ultimos.map((post, i) => <PostCard post={post} index={i} />)}
+            </div>
+          </section>
+        )}
+
+        {seccion === 'temas' && sitio.home.mostrarTemas && (
+          <section id="temas" class="mx-auto max-w-[1400px] px-5 py-16 sm:px-8">
+            <div class="flex flex-wrap items-end justify-between gap-5 border-b border-[var(--borde)] pb-5">
+              <div>
+                <p class="u-kicker">// Índice temático</p>
+                <h2 class="u-display mt-2 text-5xl sm:text-6xl">Explora por tema</h2>
+              </div>
+              <a href={withBase('/categorias/')} class="u-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[var(--suave)] transition hover:text-[var(--rojo)]">
+                Todos los temas →
+              </a>
+            </div>
+
+            <div class="mt-9 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {Object.entries(sitio.categorias).map(([clave, cat], i) => (
+                <a href={withBase('/categorias/')} class="card-grunge group p-6">
+                  <div class="flex items-start justify-between">
+                    <span class="u-display text-5xl leading-none" style={`color: var(--${cat.color})`}>{cat.emoji}</span>
+                    <span class="u-mono text-[8px] uppercase tracking-[0.26em] text-[var(--suave)]">T-0{i + 1}</span>
+                  </div>
+                  <h3 class="u-display mt-5 text-2xl transition-colors group-hover:text-[var(--rojo)]">{cat.nombre}</h3>
+                  <p class="mt-2 text-xs leading-5 text-[var(--suave)]">{cat.descripcion}</p>
+                  <span class="u-mono mt-5 inline-flex items-center gap-2 text-[8px] font-bold uppercase tracking-[0.22em] text-[var(--rojo)] transition-all group-hover:gap-3.5">
+                    Abrir tema <span aria-hidden="true">→</span>
+                  </span>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {seccion === 'autor' && sitio.home.mostrarAutor && (
+          <section class="mx-auto max-w-6xl px-5 py-16 sm:px-8">
+            <div class="grid items-center gap-10 md:grid-cols-[250px_1fr]">
+              <div class="relative mx-auto w-[220px] rotate-[-3deg] border border-[var(--borde)] bg-[var(--tarjeta)] p-3 pb-12 shadow-[10px_10px_0_rgba(0,0,0,0.4)]">
+                <span class="tape -top-3 left-7 -rotate-6"></span>
+                <span class="tape -bottom-3 right-7 -rotate-3"></span>
+                <img
+                  src={withBase(sitio.autor.avatar)}
+                  alt={sitio.autor.nombre}
+                  class="aspect-square w-full border border-[var(--borde)] object-cover"
+                  loading="lazy"
+                />
+                <p class="u-type absolute bottom-3 left-0 right-0 text-center text-[11px] text-[var(--suave)]">
+                  {sitio.sobreMi.leyendaFoto}
+                </p>
+              </div>
+
+              <div>
+                <p class="u-kicker">// Quién escribe</p>
+                <h2 class="u-display mt-2 text-5xl sm:text-6xl">Hola, soy {sitio.autor.nombre}</h2>
+                <p class="mt-4 max-w-xl text-sm leading-6 text-[var(--suave)]">{sitio.autor.bio}</p>
+
+                <div class="mt-5 flex flex-wrap gap-2">
+                  {sitio.autor.redes.filter((r) => r.url).map((red) => (
+                    <a
+                      href={red.url}
+                      class="u-mono border border-[var(--borde)] bg-[var(--tarjeta)] px-3 py-1.5 text-[8px] font-bold uppercase tracking-[0.2em] text-[var(--suave)] transition hover:border-[var(--rojo)] hover:text-[var(--rojo)]"
+                    >
+                      {etiquetasRed[red.icono] ?? red.nombre ?? red.icono}
+                    </a>
+                  ))}
+                </div>
+
+                <a href={withBase('/sobre-mi/')} class="btn-ghost mt-7">Conoce el cuaderno <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {seccion === 'newsletter' && sitio.newsletter.activo && <Newsletter />}
+      </div>
+    ))}
+  </main>
+  <Footer />
+</Layout>

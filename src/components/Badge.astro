@@ -1,0 +1,73 @@
+---
+import { sitio } from '../../sitio.js';
+
+const palabras = sitio.nombre.toUpperCase().split(/\s+/).filter(Boolean);
+const mitad = Math.ceil(palabras.length / 2);
+const linea1 = palabras.slice(0, mitad).join(' ');
+const linea2 = palabras.slice(mitad).join(' ');
+
+const puntos = Array.from({ length: 48 }, (_, i) => {
+  const angulo = (Math.PI * 2 * i) / 48 - Math.PI / 2;
+  const radio = i % 2 === 0 ? 197 : 187;
+  return `${(200 + Math.cos(angulo) * radio).toFixed(1)},${(200 + Math.sin(angulo) * radio).toFixed(1)}`;
+}).join(' ');
+---
+
+<div class="badge-emblem relative aspect-square w-[clamp(260px,52vw,400px)] select-none">
+  <svg viewBox="0 0 400 400" class="absolute inset-0 h-full w-full" aria-hidden="true">
+    <defs>
+      <filter id="badge-rough" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="8" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+      <path id="badge-arc-top" d="M 52,200 A 148,148 0 0 1 348,200" fill="none" />
+      <path id="badge-arc-bottom" d="M 348,200 A 148,148 0 0 1 52,200" fill="none" />
+    </defs>
+
+    <g filter="url(#badge-rough)">
+      <polygon
+        points={puntos}
+        fill="#14100d"
+        stroke="#e0392f"
+        stroke-width="2"
+        stroke-linejoin="round"
+      />
+      <polygon
+        points={puntos}
+        fill="none"
+        stroke="#efe2c8"
+        stroke-width="3"
+        stroke-linejoin="round"
+        opacity="0.82"
+        transform="translate(0 -4)"
+      />
+    </g>
+
+    <circle cx="200" cy="200" r="166" fill="none" stroke="#e0392f" stroke-width="1.5" stroke-dasharray="3 9" opacity="0.75" />
+    <circle cx="200" cy="200" r="152" fill="none" stroke="#efe2c8" stroke-width="1" opacity="0.18" />
+
+    <text fill="#e0392f" class="u-mono" font-size="10" letter-spacing="4.5" font-weight="700">
+      <textPath href="#badge-arc-top" startOffset="50%" text-anchor="middle">CUADERNO ABIERTO · DESDE 2024</textPath>
+    </text>
+    <text fill="#a1998b" class="u-mono" font-size="8" letter-spacing="4" font-weight="700">
+      <textPath href="#badge-arc-bottom" startOffset="50%" text-anchor="middle">IDEAS · PÍXELES · CAFÉ</textPath>
+    </text>
+  </svg>
+
+  <div class="relative z-10 flex h-full w-full flex-col items-center justify-center text-center leading-none">
+    <span class="u-mono text-[8px] font-bold uppercase tracking-[0.42em] text-[var(--rojo)] sm:text-[9px]">Est. 2024</span>
+
+    <span class="u-display mt-2 block text-[clamp(30px,6vw,54px)] text-[var(--crema)]">{linea1}</span>
+    {linea2 && (
+      <span class="u-display mt-1 block text-[clamp(26px,5vw,46px)] text-[var(--rojo)]">{linea2}</span>
+    )}
+
+    <span class="my-2 flex items-center gap-2">
+      <span class="h-px w-7 bg-[var(--borde)]"></span>
+      <span class="pixel-star scale-50"></span>
+      <span class="h-px w-7 bg-[var(--borde)]"></span>
+    </span>
+
+    <span class="u-mono text-[7px] uppercase tracking-[0.3em] text-[var(--suave)] sm:text-[8px]">Blog personal · Vol. 01</span>
+  </div>
+</div>

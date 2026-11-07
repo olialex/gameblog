@@ -1,0 +1,108 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { sitio } from '../../../sitio.js';
+import { withBase } from '../../utils/url';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<Layout title={`${sitio.listado.titulo} — ${sitio.nombre}`}>
+  <Header />
+
+  <main class="flex-1">
+    <div class="mx-auto max-w-6xl px-5 py-14 sm:px-8">
+      <header class="border-b border-[var(--borde)] pb-8">
+        <p class="u-kicker">// {sitio.listado.etiqueta}</p>
+        <h1 class="u-display mt-3 text-[clamp(3.4rem,10vw,7rem)] leading-none">{sitio.listado.titulo}</h1>
+        <p class="u-type mt-4 max-w-xl text-sm leading-6 text-[var(--suave)]">{sitio.listado.descripcion}</p>
+
+        <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <p class="u-mono text-[9px] uppercase tracking-[0.26em] text-[var(--suave)]">
+            {posts.length} entradas · orden cronológico inverso
+          </p>
+
+          <label class="relative block w-full sm:w-72">
+            <span class="sr-only">Buscar en el archivo</span>
+            <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 u-mono text-[10px] text-[var(--rojo)]">⌕</span>
+            <input
+              id="buscador"
+              type="search"
+              placeholder="Buscar en el archivo..."
+              class="w-full border border-[var(--borde)] bg-[var(--negro)]/50 py-2.5 pl-8 pr-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--texto)] placeholder:text-[var(--suave)]/60 focus:border-[var(--rojo)] focus:outline-none"
+            />
+          </label>
+        </div>
+      </header>
+
+      <div class="divide-y divide-[var(--borde)]/70">
+        {posts.map((post, i) => {
+          const clave = String(post.data.category ?? '').toLowerCase().replace(/\s+/g, '');
+          const cat = sitio.categorias[clave];
+          const color = cat?.color ?? 'rojo';
+          const emoji = cat?.emoji ?? '◆';
+          const fecha = post.data.pubDate.toLocaleDateString(sitio.idioma, { day: '2-digit', month: 'short', year: 'numeric' });
+          const palabras = post.body ? post.body.trim().split(/\s+/).length : 600;
+          const minutos = Math.max(1, Math.ceil(palabras / 200));
+          return (
+            <a
+              href={withBase(`/articulos/${post.id}/`)}
+              data-post={`${post.data.title} ${post.data.description} ${cat?.nombre ?? ''}`.toLowerCase()}
+              class="group grid gap-4 py-7 transition hover:bg-[var(--tarjeta)]/45 sm:grid-cols-[70px_1fr_auto] sm:items-center sm:px-3"
+            >
+              <span class="u-display text-3xl leading-none text-[var(--borde)] transition-colors group-hover:text-[var(--rojo)]">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+
+              <div class="min-w-0">
+                <div class="u-mono flex flex-wrap items-center gap-2 text-[8px] uppercase tracking-[0.22em]">
+                  <span style={`color: var(--${color})`}>{emoji} {cat?.nombre ?? post.data.category}</span>
+                  <span class="text-[var(--borde)]">/</span>
+                  <time datetime={post.data.pubDate.toISOString()} class="text-[var(--suave)]">{fecha}</time>
+                  <span class="text-[var(--borde)]">/</span>
+                  <span class="text-[var(--suave)]">{minutos} min</span>
+                </div>
+
+                <h2 class="u-display mt-2 text-[clamp(1.7rem,4vw,2.6rem)] leading-[0.95] transition-colors group-hover:text-[var(--rojo)]">
+                  {post.data.title}
+                </h2>
+                <p class="mt-2 max-w-2xl text-xs leading-5 text-[var(--suave)]">{post.data.description}</p>
+              </div>
+
+              <span class="u-mono hidden items-center gap-2 text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--rojo)] transition-all group-hover:gap-4 sm:inline-flex">
+                Leer <span aria-hidden="true">→</span>
+              </span>
+            </a>
+          );
+        })}
+      </div>
+
+      <p id="vacio" class="hidden py-16 text-center u-mono text-[10px] uppercase tracking-[0.3em] text-[var(--suave)]">
+        Sin resultados. Prueba con otra palabra.
+      </p>
+    </div>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    (function () {
+      var input = document.getElementById('buscador');
+      var vacio = document.getElementById('vacio');
+      var filas = Array.prototype.slice.call(document.querySelectorAll('[data-post]'));
+
+      input.addEventListener('input', function () {
+        var q = input.value.toLowerCase().trim();
+        var visibles = 0;
+        filas.forEach(function (fila) {
+          var coincide = fila.getAttribute('data-post').indexOf(q) !== -1;
+          fila.classList.toggle('hidden', !coincide);
+          if (coincide) visibles++;
+        });
+        vacio.classList.toggle('hidden', visibles > 0);
+      });
+    })();
+  </script>
+</Layout>

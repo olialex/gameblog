@@ -1,0 +1,233 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { sitio } from '../../../sitio.js';
+import { absoluteUrl, withBase } from '../../utils/url';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const clave = String(post.data.category ?? '').toLowerCase().replace(/\s+/g, '');
+const cat = sitio.categorias[clave];
+const color = cat?.color ?? 'rojo';
+const emoji = cat?.emoji ?? '◆';
+const txAcento = sitio.tema.textoAcento?.[color] ?? '#111111';
+
+const palabras = post.body ? post.body.trim().split(/\s+/).length : 600;
+const minutos = Math.max(1, Math.ceil(palabras / 200));
+const fecha = post.data.pubDate.toLocaleDateString(sitio.idioma, { day: '2-digit', month: 'long', year: 'numeric' });
+
+const todos = await getCollection('blog');
+const relacionados = todos.filter(p => p.data.category === post.data.category && p.id !== post.id).slice(0, 2);
+const otros = relacionados.length > 0 ? relacionados : todos.filter(p => p.id !== post.id).slice(0, 2);
+---
+
+<Layout title={`${post.data.title} — ${sitio.nombre}`}>
+  <div id="progress" class="fixed left-0 top-0 z-[70] h-[3px] w-0 bg-[var(--rojo)]"></div>
+
+  <Header />
+
+  <main class="flex-1">
+    <div class="mx-auto max-w-6xl px-5 pt-8 sm:px-8">
+      <a
+        href={withBase('/articulos/')}
+        class="u-mono inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.22em] text-[var(--suave)] transition hover:text-[var(--rojo)]"
+      >
+        ← Volver al archivo
+      </a>
+
+      <header class="mx-auto mt-8 max-w-4xl">
+        <div class="flex flex-wrap items-center gap-3">
+          <span
+            class="inline-flex items-center gap-1.5 border px-2.5 py-1 u-mono text-[8px] font-bold uppercase tracking-[0.2em]"
+            style={`color: var(--${color}); border-color: var(--${color});`}
+          >
+            <span aria-hidden="true">{emoji}</span>{cat?.nombre ?? post.data.category}
+          </span>
+          <span class="u-mono text-[8px] uppercase tracking-[0.22em] text-[var(--suave)]">Reporte especial</span>
+          <span class="u-mono text-[8px] uppercase tracking-[0.22em] text-[var(--suave)]">/ {fecha}</span>
+          <span class="u-mono text-[8px] uppercase tracking-[0.22em] text-[var(--suave)]">/ {minutos} min</span>
+        </div>
+
+        <h1 class="u-display mt-5 text-[clamp(2.7rem,7.4vw,5.8rem)] leading-[0.86] text-[var(--texto)]">
+          {post.data.title}
+        </h1>
+
+        <p class="u-type mt-6 max-w-2xl border-l-2 border-[var(--rojo)] pl-4 text-base leading-7 text-[var(--suave)]">
+          {post.data.description}
+        </p>
+
+        <div class="mt-8 flex flex-wrap items-center justify-between gap-5 border-y border-dashed border-[var(--borde)] py-4">
+          <div class="flex items-center gap-3">
+            <img
+              src={withBase(sitio.autor.avatar)}
+              alt={post.data.author}
+              class="h-11 w-11 border border-[var(--borde)] object-cover"
+            />
+            <div class="leading-tight">
+              <p class="u-mono text-[8px] uppercase tracking-[0.26em] text-[var(--suave)]">Escrito por</p>
+              <p class="mt-1 text-sm font-semibold text-[var(--texto)]">{post.data.author}</p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="u-mono mr-1 text-[8px] uppercase tracking-[0.24em] text-[var(--suave)]">Compartir</span>
+            <a
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.data.title)}&url=${encodeURIComponent(absoluteUrl(`/articulos/${post.id}/`))}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="border border-[var(--borde)] px-2.5 py-1.5 u-mono text-[8px] font-bold uppercase tracking-[0.18em] text-[var(--suave)] transition hover:border-[var(--rojo)] hover:text-[var(--rojo)]"
+            >
+              X
+            </a>
+            <button
+              id="copiar-enlace"
+              type="button"
+              class="border border-[var(--borde)] px-2.5 py-1.5 u-mono text-[8px] font-bold uppercase tracking-[0.18em] text-[var(--suave)] transition hover:border-[var(--rojo)] hover:text-[var(--rojo)]"
+            >
+              Copiar enlace
+            </button>
+          </div>
+        </div>
+      </header>
+    </div>
+
+    {post.data.image && (
+      <figure class="mx-auto mt-10 max-w-5xl px-5 sm:px-8">
+        <div class="frame-hard overflow-hidden">
+          <img
+            src={withBase(post.data.image)}
+            alt={post.data.title}
+            class="h-[260px] w-full object-cover sm:h-[420px]"
+            decoding="async"
+          />
+        </div>
+        <figcaption class="u-mono mt-3 flex flex-wrap items-center justify-between gap-2 text-[8px] uppercase tracking-[0.22em] text-[var(--suave)]">
+          <span>Fig. 01 — {post.data.title}</span>
+          <span>Archivo visual / {cat?.nombre ?? post.data.category}</span>
+        </figcaption>
+      </figure>
+    )}
+
+    <div class="mx-auto mt-14 grid max-w-6xl gap-12 px-5 sm:px-8 lg:grid-cols-[170px_1fr]">
+      <!-- Barra lateral -->
+      <aside class="hidden lg:block">
+        <div class="sticky top-32 space-y-7">
+          <div>
+            <p class="u-mono border-b border-[var(--borde)] pb-2 text-[8px] font-bold uppercase tracking-[0.28em] text-[var(--rojo)]">
+              En este texto
+            </p>
+            <p class="mt-3 text-[11px] leading-5 text-[var(--suave)]">{post.data.description}</p>
+          </div>
+
+          <div>
+            <p class="u-mono border-b border-[var(--borde)] pb-2 text-[8px] font-bold uppercase tracking-[0.28em] text-[var(--rojo)]">
+              Ficha
+            </p>
+            <dl class="mt-3 space-y-2 u-mono text-[8px] uppercase tracking-[0.16em]">
+              <div class="flex justify-between gap-2">
+                <dt class="text-[var(--suave)]">Tema</dt>
+                <dd style={`color: var(--${color})`}>{cat?.nombre ?? post.data.category}</dd>
+              </div>
+              <div class="flex justify-between gap-2">
+                <dt class="text-[var(--suave)]">Publicado</dt>
+                <dd class="text-[var(--texto)]">{post.data.pubDate.getFullYear()}</dd>
+              </div>
+              <div class="flex justify-between gap-2">
+                <dt class="text-[var(--suave)]">Lectura</dt>
+                <dd class="text-[var(--texto)]">{minutos} min</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div class="border border-[var(--borde)] bg-[var(--tarjeta)] p-3">
+            <p class="u-mono text-[8px] font-bold uppercase tracking-[0.24em] text-[var(--rojo)]">Nota</p>
+            <p class="u-type mt-2 text-[11px] leading-5 text-[var(--suave)]">
+              Esto es un cuaderno, no un periódico. Si encuentras un error, escríbeme y lo corregimos.
+            </p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Contenido -->
+      <article class="prose prose-grunge max-w-none">
+        <Content />
+      </article>
+    </div>
+
+    {sitio.articulo.mostrarRelacionados && otros.length > 0 && (
+      <section class="mx-auto mt-20 max-w-6xl px-5 sm:px-8">
+        <div class="flex items-end justify-between gap-4 border-b border-[var(--borde)] pb-5">
+          <div>
+            <p class="u-kicker">// Sigue leyendo</p>
+            <h2 class="u-display mt-2 text-4xl sm:text-5xl">Del mismo archivo</h2>
+          </div>
+          <a href={withBase('/articulos/')} class="u-mono text-[9px] font-bold uppercase tracking-[0.22em] text-[var(--suave)] transition hover:text-[var(--rojo)]">
+            Ver todo →
+          </a>
+        </div>
+
+        <div class="mt-8 grid gap-5 sm:grid-cols-2">
+          {otros.map((rel) => {
+            const claveRel = String(rel.data.category ?? '').toLowerCase().replace(/\s+/g, '');
+            const catRel = sitio.categorias[claveRel];
+            return (
+              <a href={withBase(`/articulos/${rel.id}/`)} class="card-grunge group flex gap-4 p-4">
+                {rel.data.image && (
+                  <div class="h-24 w-28 shrink-0 overflow-hidden border border-[var(--borde)]">
+                    <img src={withBase(rel.data.image)} alt={rel.data.title} class="img-duotone h-full w-full object-cover" loading="lazy" />
+                  </div>
+                )}
+                <div class="min-w-0">
+                  <p class="u-mono text-[8px] uppercase tracking-[0.2em]" style={`color: var(--${catRel?.color ?? 'rojo'})`}>
+                    {catRel?.nombre ?? rel.data.category}
+                  </p>
+                  <h3 class="u-display mt-2 text-xl leading-[0.95] transition-colors group-hover:text-[var(--rojo)]">
+                    {rel.data.title}
+                  </h3>
+                  <p class="mt-2 line-clamp-2 text-[11px] leading-4 text-[var(--suave)]">{rel.data.description}</p>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    )}
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    (function () {
+      var bar = document.getElementById('progress');
+      var update = function () {
+        var el = document.documentElement;
+        var max = el.scrollHeight - el.clientHeight;
+        bar.style.width = (max > 0 ? (el.scrollTop / max) * 100 : 0) + '%';
+      };
+      document.addEventListener('scroll', update, { passive: true });
+      update();
+
+      var copiar = document.getElementById('copiar-enlace');
+      if (copiar) {
+        copiar.addEventListener('click', function () {
+          navigator.clipboard.writeText(window.location.href).then(function () {
+            var previo = copiar.textContent;
+            copiar.textContent = '¡Copiado!';
+            setTimeout(function () { copiar.textContent = previo; }, 1800);
+          });
+        });
+      }
+    })();
+  </script>
+</Layout>

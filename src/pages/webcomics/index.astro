@@ -1,0 +1,82 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import CityArt from '../../components/CityArt.astro';
+import { sitio } from '../../../sitio.js';
+import { withBase } from '../../utils/url';
+
+const w = sitio.webcomics;
+---
+
+<Layout title={`${w.titulo} — ${sitio.nombre}`}>
+  <Header />
+
+  <main class="flex-1">
+    <div class="mx-auto max-w-6xl px-5 py-14 sm:px-8">
+      <header class="border-b border-[var(--borde)] pb-8">
+        <p class="u-kicker">// {w.etiqueta}</p>
+        <h1 class="u-display mt-3 text-[clamp(3.4rem,10vw,7rem)] leading-none">{w.titulo}</h1>
+        <p class="u-type mt-4 max-w-xl text-sm leading-6 text-[var(--suave)]">{w.descripcion}</p>
+      </header>
+
+      <div class="mt-12 grid items-center gap-10 md:grid-cols-[1.1fr_1fr]">
+        <div class="frame-hard scanlines relative aspect-[4/3] overflow-hidden">
+          <CityArt />
+          <span class="pointer-events-none absolute inset-0 z-[3] bg-[var(--negro)]/25"></span>
+          <span class="absolute left-1/2 top-1/2 z-[4] -translate-x-1/2 -translate-y-1/2 -rotate-6 border-2 border-[var(--rojo)] bg-[var(--negro)]/85 px-5 py-2 u-mono text-[10px] font-bold uppercase tracking-[0.3em] text-[var(--rojo)]">
+            Próximamente
+          </span>
+          <span class="u-mono absolute bottom-3 left-3 z-[4] text-[8px] uppercase tracking-[0.24em] text-[var(--crema)]/70">
+            Panel 01 / En tinta
+          </span>
+          <span class="u-mono absolute right-3 top-3 z-[4] text-[8px] uppercase tracking-[0.24em] text-[var(--crema)]/70">
+            W-001
+          </span>
+        </div>
+
+        <div>
+          <p class="u-kicker">// En el taller</p>
+          <h2 class="u-display mt-2 text-4xl leading-[0.9] sm:text-5xl">Historias que aún se están dibujando</h2>
+          <p class="mt-4 text-sm leading-6 text-[var(--suave)]">
+            Estoy preparando las primeras viñetas: una ciudad roja, personajes con demasiadas preguntas y capítulos cortos
+            para leer en una sentada. Esto es el cuaderno de producción, todavía sin entintar.
+          </p>
+
+          <div class="mt-6 space-y-3">
+            {[
+              { n: '01', t: 'Guion', d: 'La historia ya tiene principio y final. Falta el camino.' },
+              { n: '02', t: 'Bocetos', d: 'Páginas en lápiz, paneles y muchas correcciones.' },
+              { n: '03', t: 'Entintado', d: 'Color plano, tramas y un rojo que no pienso negociar.' },
+            ].map((paso) => (
+              <div class="flex items-start gap-4 border-b border-dashed border-[var(--borde)] pb-3">
+                <span class="u-display text-2xl text-[var(--rojo)]">{paso.n}</span>
+                <div>
+                  <p class="u-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--texto)]">{paso.t}</p>
+                  <p class="mt-1 text-[11px] leading-5 text-[var(--suave)]">{paso.d}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <a href={withBase('/articulos/')} class="btn-hard mt-7">Mientras tanto, lee el cuaderno <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+
+      <section class="mt-16">
+        <div class="border-b border-[var(--borde)] pb-5">
+          <p class="u-kicker">// Archivo de viñetas</p>
+          <h2 class="u-display mt-2 text-4xl sm:text-5xl">Capítulos</h2>
+        </div>
+
+        <div class="mt-8 border border-dashed border-[var(--borde)] px-6 py-14 text-center">
+          <span class="u-display block text-6xl leading-none text-[var(--borde)]">✦</span>
+          <p class="u-type mx-auto mt-4 max-w-md text-sm leading-6 text-[var(--suave)]">{w.vacio}</p>
+          <a href={withBase('/#newsletter')} class="btn-ghost mt-6">Avísame cuando salga <span aria-hidden="true">→</span></a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>

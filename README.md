@@ -1,43 +1,81 @@
-# Astro Starter Kit: Minimal
+# Mi Cuaderno Digital
+
+Blog personal construido con [Astro](https://astro.build), Tailwind CSS y contenido en Markdown. Estética oscura, editorial y con textura de imprenta: rojo carmesí, arte pixelado y tipografía de cartel.
+
+## Desarrollo
+
+Requiere Node 22 o superior.
 
 ```sh
-npm create astro@latest -- --template minimal
+npm install
+npm run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+El servidor de desarrollo se abre en `http://localhost:4321/`.
 
-## 🚀 Project Structure
+Comandos disponibles:
 
-Inside of your Astro project, you'll see the following folders and files:
+| Comando           | Acción                                             |
+| :---------------- | :------------------------------------------------- |
+| `npm run dev`     | Servidor local en `localhost:4321`                 |
+| `npm run build`   | Genera el sitio de producción en `./dist/`         |
+| `npm run preview` | Previsualiza el build local                        |
+| `npm run astro`   | Ejecuta la CLI de Astro (`add`, `check`, etc.)     |
+| `npm run panel`   | Abre el panel para editar `sitio.js`               |
+
+## Contenido
+
+- La configuración global del blog vive en `sitio.js`: nombre, textos, menú, colores, categorías, newsletter y redes.
+- Los artículos están en `src/content/posts/*.md`.
+- Las imágenes y el arte SVG están en `public/img/`.
+- Los estilos globales están en `src/styles/global.css`.
+
+## Enlaces y rutas
+
+GitHub Pages publica los proyectos en un subdirectorio (`https://usuario.github.io/repositorio/`), no en la raíz del dominio. Para que los enlaces y assets funcionen en ambos casos:
+
+- `src/utils/url.ts` expone `withBase()` (prefija el base path) y `absoluteUrl()` (URL absoluta para RSS, Open Graph y compartir).
+- Usa `withBase('/ruta/')` en cualquier `href` o `src` interno nuevo.
+- `astro.config.mjs` lee `SITE_URL` y `BASE_PATH` del entorno. En local se usa `/` como base, así que `npm run dev` y `npm run preview` funcionan en la raíz.
+- En el CI, el workflow obtiene la URL y el base reales con `actions/configure-pages`.
+
+## Despliegue en GitHub Pages
+
+El repositorio incluye `.github/workflows/deploy.yml`, que compila y publica el sitio con GitHub Actions.
+
+1. Sube el proyecto a GitHub.
+2. Ve a **Settings → Pages**.
+3. En **Source**, elige **GitHub Actions**.
+4. Haz push a `master` (o lanza el workflow manualmente desde **Actions → Deploy to GitHub Pages → Run workflow**).
+
+El workflow calcula automáticamente `SITE_URL` y `BASE_PATH` según el repositorio, ejecuta `npm ci` y `npm run build`, y publica `dist/`. No hace falta cambiar `sitio.js` para cada repositorio.
+
+> Si usas un dominio propio o publicas en `usuario.github.io`, configura el dominio en **Settings → Pages**. `actions/configure-pages` seguirá generando las URLs correctas.
+
+### Comprobación local del build con base path
+
+```sh
+SITE_URL=https://usuario.github.io BASE_PATH=/nombre-del-repo npm run build
+npx serve dist
+```
+
+El resultado debe servirse en `http://localhost:3000/nombre-del-repo/`, con enlaces, imágenes y RSS apuntando al prefijo correcto.
+
+## Estructura
 
 ```text
 /
+├── .github/workflows/deploy.yml
 ├── public/
+│   ├── .nojekyll
+│   └── img/
 ├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+│   ├── components/
+│   ├── content/posts/
+│   ├── layouts/
+│   ├── pages/
+│   ├── styles/
+│   └── utils/url.ts
+├── astro.config.mjs
+└── sitio.js
 ```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).

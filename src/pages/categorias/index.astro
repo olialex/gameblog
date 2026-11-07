@@ -1,0 +1,68 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { sitio } from '../../../sitio.js';
+import { withBase } from '../../utils/url';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog');
+const conteo = posts.reduce<Record<string, number>>((acc, post) => {
+  acc[post.data.category] = (acc[post.data.category] ?? 0) + 1;
+  return acc;
+}, {});
+---
+
+<Layout title={`${sitio.textos.temas} — ${sitio.nombre}`}>
+  <Header />
+
+  <main class="flex-1">
+    <div class="mx-auto max-w-6xl px-5 py-14 sm:px-8">
+      <header class="border-b border-[var(--borde)] pb-8">
+        <p class="u-kicker">// Índice temático</p>
+        <h1 class="u-display mt-3 text-[clamp(3.4rem,10vw,7rem)] leading-none">{sitio.textos.todosLosTemas}</h1>
+        <p class="u-type mt-4 max-w-xl text-sm leading-6 text-[var(--suave)]">{sitio.textos.temasSub}</p>
+      </header>
+
+      <div class="mt-10 grid gap-5 sm:grid-cols-2">
+        {Object.entries(sitio.categorias).map(([clave, cat], i) => (
+          <a href={withBase('/articulos/')} class="card-grunge group relative overflow-hidden p-7">
+            <span
+              class="u-display pointer-events-none absolute -right-2 -top-4 text-[7rem] leading-none text-[var(--borde)]/40 transition-colors group-hover:text-[var(--rojo)]/20"
+              aria-hidden="true"
+            >
+              0{i + 1}
+            </span>
+
+            <div class="relative">
+              <span class="u-display text-5xl leading-none" style={`color: var(--${cat.color})`}>{cat.emoji}</span>
+              <h2 class="u-display mt-4 text-3xl transition-colors group-hover:text-[var(--rojo)]">{cat.nombre}</h2>
+              <p class="mt-2 max-w-sm text-xs leading-5 text-[var(--suave)]">{cat.descripcion}</p>
+
+              <div class="mt-7 flex items-center justify-between gap-3 border-t border-dashed border-[var(--borde)] pt-3">
+                <span class="u-mono text-[8px] uppercase tracking-[0.22em] text-[var(--suave)]">
+                  {conteo[clave] ?? 0} {(conteo[clave] ?? 0) === 1 ? 'artículo' : 'artículos'}
+                </span>
+                <span class="u-mono inline-flex items-center gap-2 text-[8px] font-bold uppercase tracking-[0.22em] text-[var(--rojo)] transition-all group-hover:gap-3.5">
+                  Abrir <span aria-hidden="true">→</span>
+                </span>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <div class="mt-12 flex flex-col items-start justify-between gap-5 border border-[var(--borde)] bg-[var(--tarjeta)] p-6 sm:flex-row sm:items-center">
+        <div>
+          <p class="u-kicker">// Nota del archivero</p>
+          <p class="u-type mt-2 max-w-xl text-sm leading-6 text-[var(--suave)]">
+            Los temas son cajones, no jaulas. Un texto puede hablar de tres cosas a la vez y seguir estando en su sitio.
+          </p>
+        </div>
+        <a href={withBase('/articulos/')} class="btn-ghost shrink-0">Ver todos los artículos →</a>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>

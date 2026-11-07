@@ -1,0 +1,48 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { sitio } from '../../sitio.js';
+import { withBase } from '../utils/url';
+---
+
+<Layout title={`${sitio.textos.noEncontrada} — ${sitio.nombre}`}>
+  <Header />
+
+  <main class="flex-1">
+    <div class="mx-auto max-w-6xl px-5 py-20 sm:px-8">
+      <p class="u-kicker">// Error 404</p>
+
+      <div class="mt-4 grid items-center gap-10 md:grid-cols-[1fr_320px]">
+        <div>
+          <h1 class="u-display text-[clamp(4rem,14vw,10rem)] leading-[0.82] text-[var(--rojo)]">
+            404
+          </h1>
+          <h2 class="u-display mt-4 text-4xl leading-[0.9] sm:text-5xl">
+            {sitio.textos.noEncontrada}
+          </h2>
+          <p class="u-type mt-5 max-w-lg text-sm leading-6 text-[var(--suave)]">
+            {sitio.textos.noEncontradaTexto}
+          </p>
+
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href={withBase('/')} class="btn-hard">Volver al inicio <span aria-hidden="true">→</span></a>
+            <a href={withBase('/articulos/')} class="btn-ghost">Ver el archivo</a>
+          </div>
+        </div>
+
+        <div class="relative rotate-[1.5deg] border border-[var(--borde)] bg-[var(--tarjeta)] p-3 pb-12 shadow-[10px_10px_0_rgba(0,0,0,0.45)]">
+          <span class="tape -top-3 left-8 -rotate-6"></span>
+          <div class="frame-hard scanlines grid aspect-square place-items-center overflow-hidden bg-[var(--negro)]">
+            <span class="u-display text-[7rem] leading-none text-[var(--rojo)]">?</span>
+          </div>
+          <p class="u-type absolute bottom-4 left-0 right-0 text-center text-xs text-[var(--suave)]">
+            página perdida en el archivo
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>

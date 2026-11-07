@@ -1,0 +1,81 @@
+---
+import { sitio } from '../../sitio.js';
+import { withBase } from '../utils/url';
+const inicial = sitio.nombre.charAt(0).toUpperCase();
+---
+
+<header class="sticky top-0 z-50">
+  <!-- Barra editorial superior -->
+  <div class="hidden border-b border-[var(--borde)]/70 bg-[var(--negro)]/50 sm:block">
+    <div class="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-5 py-1.5 u-mono text-[8px] uppercase tracking-[0.3em] text-[var(--suave)] sm:px-8">
+      <span>Cuaderno abierto · Vol. 01</span>
+      <span class="hidden text-[var(--rojo)] md:inline">Est. 2024 — {sitio.autor.ubicacion || 'Internet'}</span>
+      <span>Ideas · Píxeles · Café</span>
+    </div>
+  </div>
+
+  <!-- Barra principal -->
+  <div class="border-b border-[var(--borde)] bg-[var(--fondo)]/88 backdrop-blur-md">
+    <div class="mx-auto flex h-[66px] max-w-[1400px] items-center justify-between gap-6 px-5 sm:px-8">
+      <!-- Logo -->
+      <a href={withBase('/')} class="group flex shrink-0 items-center gap-3" aria-label={`${sitio.nombre} — inicio`}>
+        <span class="relative grid h-10 w-10 place-items-center border border-[var(--rojo)] bg-[var(--rojo)] text-[var(--crema)] shadow-[3px_3px_0_var(--negro)] transition-transform duration-300 group-hover:-rotate-6">
+          <span class="u-display text-2xl leading-none">{inicial}</span>
+          <span class="absolute -right-1 -top-1 h-1.5 w-1.5 bg-[var(--crema)]"></span>
+        </span>
+        <span class="leading-none">
+          <span class="u-display block text-xl tracking-[0.06em] sm:text-2xl">{sitio.nombre}</span>
+          <span class="u-mono mt-1 hidden text-[8px] uppercase tracking-[0.3em] text-[var(--suave)] sm:block">{sitio.eslogan}</span>
+        </span>
+      </a>
+
+      <!-- Navegación desktop -->
+      <nav class="hidden items-center gap-7 lg:flex" aria-label="Navegación principal">
+        {sitio.navegacion.map((item, i) => (
+          <a
+            href={withBase(item.url)}
+            class="group relative u-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--suave)] transition-colors hover:text-[var(--crema)]"
+          >
+            <span class="mr-1.5 text-[var(--rojo)]">0{i + 1}</span>{item.texto}
+            <span class="absolute -bottom-2 left-0 h-px w-0 bg-[var(--rojo)] transition-all duration-300 group-hover:w-full"></span>
+          </a>
+        ))}
+      </nav>
+
+      <!-- Acciones -->
+      <div class="flex items-center gap-3">
+        <a href={withBase(sitio.botonMenu.url)} class="btn-hard !hidden !px-4 !py-2.5 sm:!inline-flex">
+          {sitio.botonMenu.texto}
+        </a>
+
+        <details class="relative lg:hidden">
+          <summary
+            class="grid h-10 w-10 cursor-pointer list-none place-items-center border border-[var(--borde)] bg-[var(--tarjeta)] text-[var(--texto)] transition hover:border-[var(--rojo)] [&::-webkit-details-marker]:hidden"
+            aria-label={sitio.textos.menu}
+          >
+            <svg width="17" height="13" viewBox="0 0 17 13" fill="none" aria-hidden="true">
+              <path d="M0 1h17M0 6.5h17M0 12h17" stroke="currentColor" stroke-width="1.6" />
+            </svg>
+          </summary>
+
+          <div class="absolute right-0 top-12 z-50 w-[260px] border border-[var(--borde)] bg-[var(--tarjeta)] p-2 shadow-[8px_8px_0_rgba(0,0,0,0.5)]">
+            <p class="u-mono border-b border-dashed border-[var(--borde)] px-3 py-2 text-[8px] uppercase tracking-[0.3em] text-[var(--rojo)]">
+              Índice
+            </p>
+            <nav class="flex flex-col">
+              {sitio.navegacion.map((item, i) => (
+                <a
+                  href={withBase(item.url)}
+                  class="u-mono flex items-center gap-3 border-b border-[var(--borde)]/50 px-3 py-3 text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--texto)] transition hover:bg-[var(--rojo)]/10 hover:text-[var(--rojo)]"
+                >
+                  <span class="text-[var(--rojo)]">0{i + 1}</span>{item.texto}
+                </a>
+              ))}
+            </nav>
+            <a href={withBase(sitio.botonMenu.url)} class="btn-hard mt-3 w-full !py-2.5">{sitio.botonMenu.texto}</a>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</header>

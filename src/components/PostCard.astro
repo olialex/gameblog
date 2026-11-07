@@ -1,0 +1,78 @@
+---
+import { sitio } from '../../sitio.js';
+import { withBase } from '../utils/url';
+
+interface Props {
+  post: any;
+  index?: number;
+}
+
+const { post, index = 0 } = Astro.props;
+const clave = String(post.data.category ?? '').toLowerCase().replace(/\s+/g, '');
+const cat = sitio.categorias[clave];
+const color = cat?.color ?? 'rojo';
+const emoji = cat?.emoji ?? '◆';
+const txAcento = sitio.tema.textoAcento?.[color] ?? '#111111';
+
+const palabras = post.body ? post.body.trim().split(/\s+/).length : 600;
+const minutos = Math.max(1, Math.ceil(palabras / 200));
+const fecha = post.data.pubDate.toLocaleDateString(sitio.idioma, { day: '2-digit', month: 'short', year: 'numeric' });
+---
+
+<article class="card-grunge group flex flex-col overflow-hidden">
+  <a href={withBase(`/articulos/${post.id}/`)} class="relative block aspect-[16/10] overflow-hidden border-b border-[var(--borde)] bg-[var(--negro)]">
+    {post.data.image ? (
+      <img
+        src={withBase(post.data.image)}
+        alt={post.data.title}
+        class="img-duotone h-full w-full object-cover"
+        loading="lazy"
+        decoding="async"
+      />
+    ) : (
+      <div class="halftone flex h-full w-full items-center justify-center bg-[var(--rejilla)]">
+        <span class="u-display text-7xl text-[var(--borde)]">{emoji}</span>
+      </div>
+    )}
+
+    <span
+      class="absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 border bg-[var(--negro)]/80 px-2 py-1 u-mono text-[8px] font-bold uppercase tracking-[0.2em] backdrop-blur-sm"
+      style={`color: var(--${color}); border-color: var(--${color});`}
+    >
+      <span aria-hidden="true">{emoji}</span>{cat?.nombre ?? post.data.category}
+    </span>
+
+    <span class="absolute right-3 top-3 z-10 u-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--crema)]/60">
+      A-{String(index + 1).padStart(2, '0')}
+    </span>
+
+    <span class="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--negro)]/60 via-transparent to-transparent"></span>
+  </a>
+
+  <div class="flex flex-1 flex-col p-5">
+    <div class="flex items-center justify-between gap-3 u-mono text-[8px] uppercase tracking-[0.22em] text-[var(--suave)]">
+      <time datetime={post.data.pubDate.toISOString()}>{fecha}</time>
+      <span>{minutos} min de lectura</span>
+    </div>
+
+    <h3 class="u-display mt-3 text-[1.65rem] leading-[0.95] text-[var(--texto)]">
+      <a href={withBase(`/articulos/${post.id}/`)} class="transition-colors group-hover:text-[var(--rojo)]">
+        {post.data.title}
+      </a>
+    </h3>
+
+    <p class="mt-3 line-clamp-3 text-xs leading-5 text-[var(--suave)]">{post.data.description}</p>
+
+    <div class="mt-auto flex items-center justify-between gap-3 border-t border-dashed border-[var(--borde)] pt-4">
+      <span class="u-mono text-[8px] uppercase tracking-[0.18em] text-[var(--suave)]">
+        ✍ {post.data.author}
+      </span>
+      <a
+        href={withBase(`/articulos/${post.id}/`)}
+        class="u-mono inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--rojo)] transition group-hover:gap-3"
+      >
+        Leer <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</article>

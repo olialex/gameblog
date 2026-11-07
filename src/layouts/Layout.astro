@@ -1,0 +1,70 @@
+---
+import '../styles/global.css';
+import { sitio } from '../../sitio.js';
+import { absoluteUrl, withBase } from '../utils/url';
+
+interface Props { title?: string; }
+
+const { title = `${sitio.nombre} — ${sitio.eslogan}` } = Astro.props;
+
+const cl = sitio.tema.claro;
+const os = sitio.tema.oscuro;
+const acentos = sitio.tema.acentos;
+const txA = Object.entries(sitio.tema.textoAcento ?? {}).map(([k, v]) => `--tx-${k}: ${v};`).join('');
+
+const ogImagen = absoluteUrl(sitio.imagenCompartir);
+
+const css = `
+  :root,
+  [data-theme="light"] {
+    --fondo: ${cl.fondo}; --rejilla: ${cl.rejilla}; --texto: ${cl.texto};
+    --suave: ${cl.suave}; --borde: ${cl.borde}; --tarjeta: ${cl.tarjeta};
+    --panel: ${cl.panel}; --texto-panel: ${cl.textoPanel}; --cinta: ${cl.cinta};
+  }
+  [data-theme="dark"] {
+    --fondo: ${os.fondo}; --rejilla: ${os.rejilla}; --texto: ${os.texto};
+    --suave: ${os.suave}; --borde: ${os.borde}; --tarjeta: ${os.tarjeta};
+    --panel: ${os.panel}; --texto-panel: ${os.textoPanel}; --cinta: ${os.cinta};
+  }
+  :root {
+    ${Object.entries(acentos).map(([k, v]) => `--${k}: ${v};`).join('\n    ')}
+    ${txA}
+    --fuente-principal: ${sitio.fuentes.principal};
+    --fuente-display: ${sitio.fuentes.display};
+    --fuente-manuscrita: ${sitio.fuentes.manuscrita};
+    --fuente-mono: ${sitio.fuentes.mono};
+    --fuente-typewriter: ${sitio.fuentes.typewriter};
+  }
+`;
+---
+
+<!DOCTYPE html>
+<html lang={sitio.idioma} data-theme="dark" style="color-scheme: dark;">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={sitio.descripcion} />
+  <meta name="theme-color" content={os.fondo} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={sitio.descripcion} />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={Astro.url.href} />
+  <meta property="og:image" content={ogImagen} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content={ogImagen} />
+  <link rel="canonical" href={Astro.url.href} />
+  <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+  <link rel="alternate" type="application/rss+xml" title={`${sitio.nombre} — RSS`} href={withBase('/rss.xml')} />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap"
+    rel="stylesheet"
+  />
+  <style is:inline set:html={css} />
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+  <slot />
+</body>
+</html>

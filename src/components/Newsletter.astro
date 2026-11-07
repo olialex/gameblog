@@ -1,0 +1,52 @@
+---
+import { sitio } from '../../sitio.js';
+const n = sitio.newsletter;
+---
+
+<section id="newsletter" class="mx-auto max-w-5xl px-5 py-16 sm:px-8">
+  <div class="relative overflow-hidden border border-[var(--borde)] bg-[var(--tarjeta)] p-7 sm:p-12">
+    <div class="halftone pointer-events-none absolute inset-0 opacity-[0.06]"></div>
+    <span class="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[var(--rojo)]/10 blur-2xl"></span>
+
+    <!-- Esquinas -->
+    <span class="absolute left-2 top-2 h-3 w-3 border-l border-t border-[var(--rojo)]"></span>
+    <span class="absolute right-2 top-2 h-3 w-3 border-r border-t border-[var(--rojo)]"></span>
+    <span class="absolute bottom-2 left-2 h-3 w-3 border-b border-l border-[var(--rojo)]"></span>
+    <span class="absolute bottom-2 right-2 h-3 w-3 border-b border-r border-[var(--rojo)]"></span>
+
+    <div class="relative grid items-center gap-9 md:grid-cols-[1.15fr_1fr]">
+      <div>
+        <p class="u-kicker">// Newsletter</p>
+        <h2 class="u-display mt-3 text-4xl text-[var(--crema)] sm:text-5xl">{n.titulo}</h2>
+        <p class="mt-4 max-w-md text-sm leading-6 text-[var(--suave)]">{n.texto}</p>
+
+        <div class="mt-6 flex items-center gap-3">
+          <span class="pixel-star scale-50"></span>
+          <span class="u-mono text-[8px] uppercase tracking-[0.28em] text-[var(--suave)]">Sin spam · Baja cuando quieras</span>
+        </div>
+      </div>
+
+      <form action={n.accion || '#'} method="POST" class="space-y-3">
+        <label for="newsletter-email" class="u-mono block text-[8px] font-bold uppercase tracking-[0.3em] text-[var(--rojo)]">
+          Tu correo electrónico
+        </label>
+        <input
+          id="newsletter-email"
+          type="email"
+          name={n.campo}
+          required
+          placeholder={n.placeholder}
+          class="w-full border border-[var(--borde)] bg-[var(--negro)]/60 px-4 py-3.5 font-mono text-xs text-[var(--texto)] placeholder:text-[var(--suave)]/60 focus:border-[var(--rojo)] focus:outline-none focus:ring-1 focus:ring-[var(--rojo)]"
+        />
+        <button type="submit" class="btn-hard w-full">
+          {n.boton} <span aria-hidden="true">→</span>
+        </button>
+        {!n.accion && (
+          <p class="u-mono pt-1 text-[7px] uppercase leading-relaxed tracking-[0.18em] text-[var(--suave)]/70">
+            {n.mensajeDemo}
+          </p>
+        )}
+      </form>
+    </div>
+  </div>
+</section>
