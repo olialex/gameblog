@@ -21,10 +21,10 @@
   --crema: #efe2c8;
   --negro: #0b0907;
 
-  --fuente-principal: "Archivo", system-ui, sans-serif;
+  --fuente-principal: "Open Sans", system-ui, sans-serif;
+  --fuente-texto: "Open Sans", system-ui, sans-serif;
   --fuente-display: "Bebas Neue", "Arial Narrow", Impact, sans-serif;
   --fuente-mono: "Space Mono", ui-monospace, monospace;
-  --fuente-typewriter: "Special Elite", "Courier New", monospace;
 
   --grano: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
 }
@@ -96,7 +96,7 @@ body::after {
 }
 
 .u-type {
-  font-family: var(--fuente-typewriter);
+  font-family: var(--fuente-texto);
 }
 
 .u-label {
@@ -315,7 +315,7 @@ body::after {
 }
 
 .prose-grunge blockquote {
-  font-family: var(--fuente-typewriter);
+  font-family: var(--fuente-texto);
   font-size: 1.15rem;
   line-height: 1.55;
   border-left: 3px solid var(--rojo);

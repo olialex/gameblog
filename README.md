@@ -29,6 +29,7 @@ Comandos disponibles:
 - Los artículos están en `src/content/posts/*.md`.
 - Las imágenes y el arte SVG están en `public/img/`.
 - Los estilos globales están en `src/styles/global.css`.
+- Las fuentes están autoalojadas en `src/assets/fonts/` y se declaran en `src/styles/fonts.css`. No se carga nada desde Google Fonts: Open Sans (párrafos), Bebas Neue (titulares) y Space Mono (etiquetas).
 
 ## Enlaces y rutas
 

@@ -351,12 +351,12 @@ export const sitio = {
   // 14. FUENTES
   // --------------------------------------------------------------------------
   fuentes: {
+    // Fuentes autoalojadas en src/assets/fonts (ver src/styles/fonts.css).
     url: '',
-    principal: "'Archivo', system-ui, sans-serif",
-    manuscrita: "'Special Elite', cursive",
+    principal: "'Open Sans', system-ui, sans-serif",
+    texto: "'Open Sans', system-ui, sans-serif",
     display: "'Bebas Neue', 'Arial Narrow', Impact, sans-serif",
     pixel: "'Bebas Neue', sans-serif",
     mono: "'Space Mono', ui-monospace, monospace",
-    typewriter: "'Special Elite', 'Courier New', monospace",
   },
 };
